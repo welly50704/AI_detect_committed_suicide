@@ -42,7 +42,7 @@ static_back = None
 
 def send_gmail(imgfilename):
     content = MIMEMultipart()  # 建立MIMEMultipart物件
-    content["subject"] = "主管你的位置要被拔掉囉"  # 郵件標題
+    content["subject"] = "注意!有疑似想自殺的人!"  # 郵件標題
     content["from"] = "Sender"  # 寄件者
     content["to"] = "Receiver" # 收件者
     content.attach(MIMEText("Demo python send email"))  # 郵件內容
@@ -131,25 +131,32 @@ while True:
 
     if(con>20):
         
+        # 1970年後經過的浮點秒數
         nowtime = str(round(time.time()))
+        #以符點秒數命名
         imgfilename = 'D:/cv2photo/' + nowtime + '.jpg'
+        #寫frame入檔案
         cv2.imwrite(imgfilename, frame)
         print(nowtime)
+        # 將照片上傳至AWS做分析
         emotion = lr.emotions(client, imgfilename)
         count = lr.count_face(client, imgfilename)
+        # 如果以下兩個條件皆達成，會做後續  1.寄EMAIL 
+        #                                2.發出警示音的動作
         if (emotion == 'SAD' or emotion == 'FEAR') and count == 1:
             print('有人需要幫忙!')
-
+            #前面定義過的函式,用來寄出EMAIL
             send_gmail(imgfilename)
-            
+            # 發出警示音
             for i in range(5):
                 engine.say("object detected")
             engine.runAndWait()
+         # 如果以上兩個條件，其中一個沒達成，則執行else
         else:
+        # 印出辨識出的情緒及人數
             print(f'情緒:{emotion};共有{count}人\n沒事啦!想太多')
-            mode =0
             con = 0 
-            sleep(5)
+            sleep(2)
     cv2.imshow("Color Frame", frame) 
   
     key = cv2.waitKey(1) 
