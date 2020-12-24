@@ -1,4 +1,4 @@
-import cv2, time, pandas 
+import cv2, time
 # importing datetime class from datetime library 
 from datetime import datetime 
 from time import sleep
